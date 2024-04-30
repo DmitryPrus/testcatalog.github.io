@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sending request</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+  }
+  form {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  input[type="submit"] {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  input[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+  #response {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+</style>
+</head>
+<body>
+  <form id="postDataForm">
+    <label for="operators">Operators:</label>
+    <input type="number" id="operators" name="operators" value="1" required><br><br>
+    
+    <label for="locations">Locations:</label>
+    <input type="number" id="locations" name="locations" value="1" required><br><br>
+    
+    <label for="newProducts">New Products:</label>
+    <input type="number" id="newProducts" name="newProducts" value="1" required><br><br>
+    
+    <label for="productsToDelete">Products to Delete:</label>
+    <input type="number" id="productsToDelete" name="productsToDelete" value="0" required><br><br>
+    
+    <label for="productsToUpdate">Products to Update:</label>
+    <input type="number" id="productsToUpdate" name="productsToUpdate" value="0" required><br><br>
+    
+    <label for="authToken">Auth Token:</label>
+    <input type="text" id="authToken" name="authToken" required><br><br>
+    
+    <input type="submit" value="Submit">
+  </form>
+
+  <div id="response"></div>
+
+  <script>
+    document.getElementById('postDataForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      
+      var formData = {
+        operators: document.getElementById('operators').value,
+        locations: document.getElementById('locations').value,
+        newProducts: document.getElementById('newProducts').value,
+        productsToDelete: document.getElementById('productsToDelete').value,
+        productsToUpdate: document.getElementById('productsToUpdate').value,
+        authToken: document.getElementById('authToken').value
+      };
+      
+      fetch('https://fjuf0ua2oc.execute-api.eu-north-1.amazonaws.com/loadproductcatalog', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        var responseElement = document.getElementById('response');
+        responseElement.textContent = JSON.stringify(data, null, 2);
+      })
+      .catch(error => console.error('Error:', error));
+    });
+  </script>
+</body>
+</html>
