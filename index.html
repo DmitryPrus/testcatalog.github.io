@@ -72,7 +72,7 @@
         authToken: document.getElementById('authToken').value
       };
       
-      fetch('https://fjuf0ua2oc.execute-api.eu-north-1.amazonaws.com/loadproductcatalog', {
+      fetch('https://fjuf0ua2oc.execute-api.eu-north-1.amazonaws.com/catalogstage/loadproductcatalog', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -81,9 +81,9 @@
       })
       .then(response => response.json())
       .then(data => {
-        var responseElement = document.getElementById('response');
-        responseElement.textContent = JSON.stringify(data, null, 2);
-      })
+  var responseElement = document.getElementById('response');
+  responseElement.textContent = JSON.stringify(data, null, 2);
+})
       .catch(error => console.error('Error:', error));
     });
   </script>
