@@ -9,25 +9,33 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         label {
-            display: block;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
+            text-align: left;
+            font-weight: bold;
         }
         input {
-            width: 100%;
+            width: 200px;
             padding: 8px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+        }
+        input::placeholder {
+            color: gray;
         }
         button {
             padding: 10px 20px;
-            background-color: #4CAF50;
+            background-color: #00BFFF;
             color: white;
             border: none;
             cursor: pointer;
         }
         button:hover {
-            background-color: #45a049;
+            background-color: #1E90FF;
         }
         #response {
             margin-top: 20px;
@@ -37,18 +45,30 @@
     </style>
 </head>
 <body>
-    <label for="operators">Operators:</label>
-    <input type="number" id="operators" value="1">
-    <label for="locations">Locations:</label>
-    <input type="number" id="locations" value="1">
-    <label for="newProducts">New Products:</label>
-    <input type="number" id="newProducts" value="0">
-    <label for="productsToDelete">Products to Delete:</label>
-    <input type="number" id="productsToDelete" value="0">
-    <label for="productsToUpdate">Products to Update:</label>
-    <input type="number" id="productsToUpdate" value="0">
-    <label for="authToken">Auth Token:</label>
-    <input type="text" id="authToken" value="text token data">
+    <div>
+        <label for="operators">Operators:</label>
+        <input type="number" id="operators" placeholder="Enter the number of operators">
+    </div>
+    <div>
+        <label for="locations">Locations:</label>
+        <input type="number" id="locations" placeholder="Enter the number of locations">
+    </div>
+    <div>
+        <label for="newProducts">New Products:</label>
+        <input type="number" id="newProducts" placeholder="Enter the number of new products">
+    </div>
+    <div>
+        <label for="productsToDelete">Products to Delete:</label>
+        <input type="number" id="productsToDelete" placeholder="Enter the number of products to delete">
+    </div>
+    <div>
+        <label for="productsToUpdate">Products to Update:</label>
+        <input type="number" id="productsToUpdate" placeholder="Enter the number of products to update">
+    </div>
+    <div>
+        <label for="authToken">Auth Token:</label>
+        <input type="text" id="authToken" placeholder="Enter the auth token">
+    </div>
     <button onclick="sendJSON()">Submit</button>
     <div id="response"></div>
 
