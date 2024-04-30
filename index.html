@@ -1,91 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sending request</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-  }
-  form {
-    max-width: 500px;
-    margin: 50px auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  input[type="submit"] {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  input[type="submit"]:hover {
-    background-color: #0056b3;
-  }
-  #response {
-    margin-top: 20px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Sender</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #response {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+    </style>
 </head>
 <body>
-  <form id="postDataForm">
     <label for="operators">Operators:</label>
-    <input type="number" id="operators" name="operators" value="1" required><br><br>
-    
+    <input type="number" id="operators" value="1">
     <label for="locations">Locations:</label>
-    <input type="number" id="locations" name="locations" value="1" required><br><br>
-    
+    <input type="number" id="locations" value="1">
     <label for="newProducts">New Products:</label>
-    <input type="number" id="newProducts" name="newProducts" value="1" required><br><br>
-    
+    <input type="number" id="newProducts" value="0">
     <label for="productsToDelete">Products to Delete:</label>
-    <input type="number" id="productsToDelete" name="productsToDelete" value="0" required><br><br>
-    
+    <input type="number" id="productsToDelete" value="0">
     <label for="productsToUpdate">Products to Update:</label>
-    <input type="number" id="productsToUpdate" name="productsToUpdate" value="0" required><br><br>
-    
+    <input type="number" id="productsToUpdate" value="0">
     <label for="authToken">Auth Token:</label>
-    <input type="text" id="authToken" name="authToken" required><br><br>
-    
-    <input type="submit" value="Submit">
-  </form>
+    <input type="text" id="authToken" value="text token data">
+    <button onclick="sendJSON()">Submit</button>
+    <div id="response"></div>
 
-  <div id="response"></div>
+    <script>
+        function sendJSON() {
+            var operators = document.getElementById("operators").value;
+            var locations = document.getElementById("locations").value;
+            var newProducts = document.getElementById("newProducts").value;
+            var productsToDelete = document.getElementById("productsToDelete").value;
+            var productsToUpdate = document.getElementById("productsToUpdate").value;
+            var authToken = document.getElementById("authToken").value;
 
-  <script>
-    document.getElementById('postDataForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-      
-      var formData = {
-        operators: document.getElementById('operators').value,
-        locations: document.getElementById('locations').value,
-        newProducts: document.getElementById('newProducts').value,
-        productsToDelete: document.getElementById('productsToDelete').value,
-        productsToUpdate: document.getElementById('productsToUpdate').value,
-        authToken: document.getElementById('authToken').value
-      };
-      
-      fetch('https://fjuf0ua2oc.execute-api.eu-north-1.amazonaws.com/catalogstage/loadproductcatalog', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      })
-      .then(response => response.json())
-      .then(data => {
-  var responseElement = document.getElementById('response');
-  responseElement.textContent = JSON.stringify(data, null, 2);
-})
-      .catch(error => console.error('Error:', error));
-    });
-  </script>
+            var jsonData = {
+                "operators": parseInt(operators),
+                "locations": parseInt(locations),
+                "newProducts": parseInt(newProducts),
+                "productsToDelete": parseInt(productsToDelete),
+                "productsToUpdate": parseInt(productsToUpdate),
+                "authToken": authToken
+            };
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "https://fjuf0ua2oc.execute-api.eu-north-1.amazonaws.com/catalogstage/loadproductcatalog", true);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    document.getElementById("response").innerText = xhr.responseText;
+                } else {
+                    document.getElementById("response").innerText = "Error: " + xhr.statusText;
+                }
+            };
+            xhr.send(JSON.stringify(jsonData));
+        }
+    </script>
 </body>
 </html>
