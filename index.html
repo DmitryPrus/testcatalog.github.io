@@ -12,11 +12,16 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
         }
         label {
             margin-bottom: 5px;
-            text-align: left;
+            text-align: right;
             font-weight: bold;
+            display: inline-block;
+            width: 200px; /* Ширина для выравнивания */
         }
         input {
             width: 200px;
@@ -28,7 +33,7 @@
             color: gray;
         }
         button {
-            padding: 10px 20px;
+            padding: 10px 60px;
             background-color: #00BFFF;
             color: white;
             border: none;
@@ -36,6 +41,26 @@
         }
         button:hover {
             background-color: #1E90FF;
+        }
+        button.loading {
+            pointer-events: none; /* Запрещаем события мыши, чтобы предотвратить повторные нажатия */
+            opacity: 0.7; /* Устанавливаем прозрачность для обозначения недоступности */
+        }
+        button.loading:after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid white;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
         #response {
             margin-top: 20px;
@@ -50,58 +75,94 @@
         <input type="number" id="operators" placeholder="Enter the number of operators">
     </div>
     <div>
-        <label for="locations">Locations:</label>
+        <label for="locations">Locations per operator:</label>
         <input type="number" id="locations" placeholder="Enter the number of locations">
     </div>
     <div>
-        <label for="newProducts">New Products:</label>
+        <label for="newProducts">Products new:</label>
         <input type="number" id="newProducts" placeholder="Enter the number of new products">
     </div>
     <div>
-        <label for="productsToDelete">Products to Delete:</label>
+        <label for="productsToDelete">Products to delete:</label>
         <input type="number" id="productsToDelete" placeholder="Enter the number of products to delete">
     </div>
     <div>
-        <label for="productsToUpdate">Products to Update:</label>
+        <label for="productsToUpdate">Products to update:</label>
         <input type="number" id="productsToUpdate" placeholder="Enter the number of products to update">
     </div>
     <div>
-        <label for="authToken">Auth Token:</label>
+        <label for="authToken">Auth token:</label>
         <input type="text" id="authToken" placeholder="Enter the auth token">
     </div>
-    <button onclick="sendJSON()">Submit</button>
+	<div>
+    <button onclick="sendJSON()" id="submitButton">Submit</button>
+	<p>
+    Processing time (s): <span id="processingTime">00.000</span></div>
     <div id="response"></div>
 
     <script>
-        function sendJSON() {
-            var operators = document.getElementById("operators").value;
-            var locations = document.getElementById("locations").value;
-            var newProducts = document.getElementById("newProducts").value;
-            var productsToDelete = document.getElementById("productsToDelete").value;
-            var productsToUpdate = document.getElementById("productsToUpdate").value;
-            var authToken = document.getElementById("authToken").value;
+var startTime;
+var timerInterval;
 
-            var jsonData = {
-                "operators": parseInt(operators),
-                "locations": parseInt(locations),
-                "newProducts": parseInt(newProducts),
-                "productsToDelete": parseInt(productsToDelete),
-                "productsToUpdate": parseInt(productsToUpdate),
-                "authToken": authToken
-            };
+function startTimer() {
+  startTime = Date.now();
+  timerInterval = setInterval(updateProcessingTime, 1);
+}
 
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "https://fjuf0ua2oc.execute-api.eu-north-1.amazonaws.com/catalogstage/loadproductcatalog", true);
-            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    document.getElementById("response").innerText = xhr.responseText;
-                } else {
-                    document.getElementById("response").innerText = "Error: " + xhr.statusText;
-                }
-            };
-            xhr.send(JSON.stringify(jsonData));
-        }
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+function updateProcessingTime() {
+  var timeElapsed = Date.now() - startTime;
+  var seconds = Math.floor(timeElapsed / 1000);
+  var milliseconds = timeElapsed % 1000;
+  var timeString = seconds.toString().padStart(2, '0') + '.' + milliseconds.toString().padStart(3, '0');
+  document.getElementById("processingTime").innerText = timeString;
+}
+
+function sendJSON() {
+  var button = document.getElementById("submitButton");
+  button.classList.add("loading"); // Добавляем класс "loading" для анимации
+  button.disabled = true; // Отключаем кнопку после первого нажатия
+
+  startTimer(); // Запускаем секундомер при нажатии кнопки "Submit"
+
+  var operators = document.getElementById("operators").value;
+  var locations = document.getElementById("locations").value;
+  var newProducts = document.getElementById("newProducts").value;
+  var productsToDelete = document.getElementById("productsToDelete").value;
+  var productsToUpdate = document.getElementById("productsToUpdate").value;
+  var authToken = document.getElementById("authToken").value;
+
+  var jsonData = {
+    "operators": parseInt(operators),
+    "locations": parseInt(locations),
+    "newProducts": parseInt(newProducts),
+    "productsToDelete": parseInt(productsToDelete),
+    "productsToUpdate": parseInt(productsToUpdate),
+    "authToken": authToken
+  };
+
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", "https://fjuf0ua2oc.execute-api.eu-north-1.amazonaws.com/catalogstage/loadproductcatalog", true);
+  xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+  xhr.onload = function() {
+    button.classList.remove("loading"); // Удаляем класс "loading" после получения ответа
+    button.disabled = false; // Включаем кнопку после получения ответа
+
+    if (xhr.status === 200) {
+      document.getElementById("response").innerText = xhr.responseText;
+    } else {
+      document.getElementById("response").innerText = "Error: " + xhr.statusText;
+    }
+
+    stopTimer(); // Останавливаем секундомер после получения ответа
+  };
+
+  xhr.send(JSON.stringify(jsonData));
+}
     </script>
 </body>
 </html>
