@@ -222,6 +222,8 @@
         // http://localhost:8012/runtest
         xhr.open("POST", "https://fjuf0ua2oc.execute-api.eu-north-1.amazonaws.com/catalogstage/loadproductcatalog", true);
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.timeout = 90000
+        xhr.ontimeout = function() {console.error("Request timed out after 90 seconds");};
 
         xhr.onload = function() {
             button.classList.remove("loading");
